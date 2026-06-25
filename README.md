@@ -239,9 +239,15 @@ pip install -r requirements.txt && cd ..
 ### 2) Configure
 Copy `.env.example` → `.env` and fill it in (see `.env.example` for every key).
 
-### 3) Run
+### 3) Seed demo data (recommended)
+```bash
+npm run seed             # writes ~10 sample contacts to MCP_USER_ID (zero Gemini calls)
+```
+
+### 4) Run
 ```bash
 npm run mcp:smoke        # verify the MCP server + tool schemas (no API calls)
+npm run mcp:live         # end-to-end: real Firestore read + full search pipeline
 npm run dev              # the web/Telegram app on http://localhost:9002
 cd adk-agent && adk web  # the ADK concierge playground
 ```

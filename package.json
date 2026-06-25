@@ -10,8 +10,10 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "seed": "tsx scripts/seed-demo.ts",
     "mcp": "tsx mcp-server/server.ts",
     "mcp:smoke": "tsx mcp-server/smoke-test.ts",
+    "mcp:live": "tsx mcp-server/live-test.ts",
     "mcp:inspect": "mcp-inspector tsx mcp-server/server.ts"
   },
   "dependencies": {
