@@ -25,7 +25,7 @@ same intelligence through a conversational concierge.
 
 You describe a person in plain language — for example:
 
-> *"Ivan from the AI conference, snowboards, works at Yandex as a backend dev, +7 999 123 45 67"*
+> *"Alex from the AI conference, snowboards, works at Stripe as a backend dev, +1 415 555 0142"*
 
 …and Just Contacts extracts the **name**, **role/company**, **tags**, **phone**, **email**, and a
 short **dossier** of who this person is, then saves a ready-made profile. No forms. You can also
@@ -252,8 +252,8 @@ npm run dev              # the web/Telegram app on http://localhost:9002
 cd adk-agent && adk web  # the ADK concierge playground
 ```
 Then in the playground, pick `contacts_concierge` and try:
-> "Save Ivan from the AI conf, snowboards, works at Yandex, +7 999 123 45 67"
-> "who works in design?" · "where did I meet Ivan?"
+> "Save Alex from the AI conf, snowboards, works at Stripe, +1 415 555 0142"
+> "who works in design?" · "where did I meet Alex?"
 
 > The agents spawn the MCP server via `npx tsx mcp-server/server.ts`, so `npm install` must have
 > run in the repo root first.

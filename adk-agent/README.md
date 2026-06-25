@@ -55,9 +55,9 @@ pip install -r requirements.txt
 # 3. Launch the playground (from this adk-agent/ folder)
 adk web
 # open the printed URL, pick "contacts_concierge", and chat:
-#   "Save Ivan from the AI conf, snowboards, works at Yandex, +7 999 123 45 67"
+#   "Save Alex from the AI conf, snowboards, works at Stripe, +1 415 555 0142"
 #   "who works in design?"
-#   "where did I meet Ivan?"
+#   "where did I meet Alex?"
 ```
 
 > Node.js must be installed: the agents spawn the MCP server via `npx tsx mcp-server/server.ts`.

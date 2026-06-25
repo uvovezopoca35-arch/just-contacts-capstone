@@ -51,7 +51,7 @@ const TOOLS: Tool[] = [
   {
     name: 'add_contact',
     description:
-      'Capture a new contact from free-form natural language (e.g. "Ivan from the AI conf, snowboards, works at Yandex, +7 999 123 45 67"). The AI extracts name, role, tags, phone, email and a dossier, then saves it. De-dupes by phone.',
+      'Capture a new contact from free-form natural language (e.g. "Alex from the AI conf, snowboards, works at Stripe, +1 415 555 0142"). The AI extracts name, role, tags, phone, email and a dossier, then saves it. De-dupes by phone.',
     inputSchema: {
       type: 'object',
       properties: { text: { type: 'string', description: 'Everything you remember about the person, in plain language.' } },
