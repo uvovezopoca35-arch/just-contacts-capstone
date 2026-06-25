@@ -260,4 +260,5 @@ Then in the playground, pick `contacts_concierge` and try:
   shared toolset is a trivial change if process count matters.
 
 ## License
-MIT — see `LICENSE`.
+**Proprietary — All Rights Reserved.** The code is public for review/evaluation only;
+no rights to use, copy, modify, or distribute are granted. See `LICENSE`.
