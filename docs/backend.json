@@ -1,0 +1,235 @@
+
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user's profile and application settings.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity (Telegram User ID)."
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "avatarUrl": {
+          "type": "string",
+          "description": "URL to the user's avatar image.",
+          "format": "uri"
+        },
+        "totalContacts": {
+          "type": "number",
+          "description": "Total number of contacts managed by the user."
+        },
+        "lastActive": {
+          "type": "string",
+          "description": "Timestamp of the user's last activity.",
+          "format": "date-time"
+        },
+        "language": {
+          "type": "string",
+          "description": "Preferred language for the user interface."
+        },
+        "theme": {
+          "type": "string",
+          "description": "Preferred theme for the user interface."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "totalContacts",
+        "lastActive",
+        "language",
+        "theme"
+      ]
+    },
+    "Contact": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Contact",
+      "type": "object",
+      "description": "Represents a social connection managed by a user, including their details, interactions, and social links.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Contact entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who owns this contact."
+        },
+        "name": {
+          "type": "string",
+          "description": "The full name of the contact."
+        },
+        "tags": {
+          "type": "array",
+          "description": "A list of descriptive tags associated with the contact.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "summary": {
+          "type": "string",
+          "description": "An AI-generated summary or bio for the contact."
+        },
+        "lastInteraction": {
+          "type": "string",
+          "description": "Timestamp of the last known interaction.",
+          "format": "date-time"
+        },
+        "interactionScore": {
+          "type": "number",
+          "description": "A calculated score (0-100)."
+        },
+        "birthday": {
+          "type": "string",
+          "description": "Optional timestamp of the contact's birthday.",
+          "format": "date-time"
+        },
+        "telegram": {
+          "type": "string",
+          "description": "Telegram handle."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address.",
+          "format": "email"
+        },
+        "linkedin": {
+          "type": "string",
+          "description": "LinkedIn profile URL.",
+          "format": "uri"
+        },
+        "isFavorite": {
+          "type": "boolean",
+          "description": "Whether the contact is marked as a favorite."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "name",
+        "tags",
+        "summary",
+        "lastInteraction",
+        "interactionScore"
+      ]
+    },
+    "History": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "History",
+      "type": "object",
+      "description": "Represents a historical interaction.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the History entity."
+        },
+        "contactId": {
+          "type": "string",
+          "description": "Reference to the Contact."
+        },
+        "date": {
+          "type": "string",
+          "description": "Timestamp when the event occurred.",
+          "format": "date-time"
+        },
+        "type": {
+          "type": "string",
+          "description": "meeting, call, or note."
+        },
+        "summary": {
+          "type": "string",
+          "description": "A brief summary of the interaction."
+        }
+      },
+      "required": [
+        "id",
+        "contactId",
+        "date",
+        "type",
+        "summary"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous",
+      "google"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Firebase Authentication UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/contacts/{contactId}",
+        "definition": {
+          "entityName": "Contact",
+          "schema": {
+            "$ref": "#/backend/entities/Contact"
+          },
+          "description": "Stores contact details.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Owning user UID."
+            },
+            {
+              "name": "contactId",
+              "description": "Contact ID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/contacts/{contactId}/history/{historyId}",
+        "definition": {
+          "entityName": "History",
+          "schema": {
+            "$ref": "#/backend/entities/History"
+          },
+          "description": "Interaction history.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Owning user UID."
+            },
+            {
+              "name": "contactId",
+              "description": "Parent contact ID."
+            },
+            {
+              "name": "historyId",
+              "description": "History event ID."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "Standard hierarchical structure with ownership checked by {userId} in path."
+  }
+}

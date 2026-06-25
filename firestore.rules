@@ -1,0 +1,117 @@
+rules_version = '2';
+
+/**
+ * FIRESTORE SECURITY RULES - PROTOTYPING MODE
+ * 
+ * CORE PHILOSOPHY:
+ * This ruleset implements a strict path-based ownership model ("Authorization Independence").
+ * Security is enforced by ensuring that the authenticated user's UID matches the 
+ * {userId} parameter in the document path. While the rules are highly restrictive 
+ * regarding WHO can access data, they are flexible regarding the SHAPE of the 
+ * data (schema-agnostic) to facilitate rapid prototyping.
+ *
+ * DATA STRUCTURE:
+ * The database is organized hierarchically:
+ * - /users/{userId}: Root user profile.
+ * - /users/{userId}/contacts/{contactId}: Contacts owned by a specific user.
+ * - /users/{userId}/contacts/{contactId}/history/{historyId}: Interaction history for a specific contact.
+ *
+ * KEY SECURITY DECISIONS:
+ * 1. Path-Based Authorization: The 'userId' in the path is the primary source of truth for ownership.
+ * 2. Relational Integrity: When creating or updating documents, the rules enforce that internal 
+ *    IDs (like userId or contactId) remain consistent with the document's location in the tree.
+ * 3. Immutable Ownership: Once a document is created, fields that establish ownership 
+ *    (e.g., userId) cannot be changed.
+ * 4. Explicit Denials: Any operation not explicitly allowed is denied by default.
+ *
+ * DENORMALIZATION FOR AUTHORIZATION:
+ * To avoid costly get() calls, we enforce that 'userId' and 'contactId' are present 
+ * within document bodies to verify consistency against the path variables.
+ *
+ * STRUCTURAL SEGREGATION:
+ * All user-specific data is nested under the /users/{userId} path, ensuring clear 
+ * boundaries between different users' data and preventing accidental data leakage.
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- GLOBAL HELPER FUNCTIONS ---
+
+    /**
+     * @description Checks if the request is made by an authenticated user.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user's UID matches the provided userId.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Combines ownership check with a check for document existence.
+     * Used for update and delete operations to ensure the target exists and is owned.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    // --- COLLECTION RULES ---
+
+    /**
+     * @description Rules for the User profile document.
+     * @path /users/{userId}
+     * @allow (create) if authenticated UID matches path and internal 'id' matches path.
+     * @deny (update) if the internal 'id' is being changed to a different value.
+     * @principle Self-Creation and Path-Based Ownership.
+     */
+    match /users/{userId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+
+      /**
+       * @description Rules for individual Contacts managed by a user.
+       * @path /users/{userId}/contacts/{contactId}
+       * @allow (list) if the user is the owner of the parent path.
+       * @deny (create) if the 'userId' field in the data does not match the path.
+       * @principle Relational Integrity and Ownership Invariants.
+       */
+      match /contacts/{contactId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && request.resource.data.userId == userId;
+        allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+        allow delete: if isExistingOwner(userId);
+
+        /**
+         * @description Rules for History events related to a specific contact.
+         * @path /users/{userId}/contacts/{contactId}/history/{historyId}
+         * @allow (get) if the user owns the contact via the path hierarchy.
+         * @deny (update) if the 'contactId' is modified, breaking the relationship.
+         * @principle Authorization Independence and Path-Consistency.
+         */
+        match /history/{historyId} {
+          allow get, list: if isOwner(userId);
+          allow create: if isOwner(userId) && request.resource.data.contactId == contactId;
+          allow update: if isExistingOwner(userId) && request.resource.data.contactId == resource.data.contactId;
+          allow delete: if isExistingOwner(userId);
+        }
+      }
+    }
+
+    // Bot state — server-only (Admin SDK), deny all client access
+    match /bot_state/{docId} {
+      allow read, write: if false;
+    }
+
+    // Rate-limit counters — server-only (Admin SDK), deny all client access
+    match /rate_limits/{docId} {
+      allow read, write: if false;
+    }
+  }
+}

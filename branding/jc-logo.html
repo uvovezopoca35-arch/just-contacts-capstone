@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; width: 512px; height: 512px; }
+  .logo {
+    width: 512px;
+    height: 512px;
+    box-sizing: border-box;
+    background: #2563EB;            /* brand accent blue */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+  }
+  /* neobrutalist inset frame */
+  .frame {
+    position: absolute;
+    inset: 40px;
+    border: 12px solid #000;
+    border-radius: 4px;
+  }
+  .mono {
+    position: relative;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 250px;
+    line-height: 1;
+    letter-spacing: -6px;
+    color: #FFFFFF;
+    text-shadow: 9px 9px 0 #000;  /* hard offset shadow, no blur */
+    transform: translateX(-4px);
+  }
+  /* yellow accent dot — brand pop */
+  .dot {
+    position: absolute;
+    width: 42px;
+    height: 42px;
+    background: #FACC15;
+    border: 7px solid #000;
+    border-radius: 50%;
+    right: 104px;
+    bottom: 120px;
+  }
+</style>
+</head>
+<body>
+  <div class="logo">
+    <div class="frame"></div>
+    <div class="mono">JC</div>
+    <div class="dot"></div>
+  </div>
+</body>
+</html>

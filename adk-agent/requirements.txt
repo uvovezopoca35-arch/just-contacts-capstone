@@ -1,0 +1,5 @@
+# Contacts Concierge — ADK multi-agent dependencies.
+# Verified with the versions pinned below (Python 3.12).
+google-adk>=2.0,<3      # Agent Development Kit: LlmAgent, multi-agent, McpToolset
+mcp>=1.20               # MCP client used by McpToolset to reach our stdio server
+python-dotenv>=1.0      # load the shared repo-root .env

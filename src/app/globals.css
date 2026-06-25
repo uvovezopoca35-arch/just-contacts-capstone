@@ -1,0 +1,489 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * NEOBRUTALISM Design System — Just Contacts
+ * Light + Dark theme via [data-theme="dark"] on <html>.
+ * Telegram colorScheme is synced in TelegramProvider.
+ */
+
+@layer base {
+  :root {
+    /* ── Neo tokens (light) ── */
+    --neo-bg: #FFFFFF;
+    --neo-bg-secondary: #F5F5F5;
+    --neo-surface: #FFFFFF;
+    --neo-text: #000000;
+    --neo-text-secondary: #555555;
+    --neo-hint: #888888;
+    --neo-border: #000000;
+    --neo-border-width: 2.5px;
+    --neo-shadow: 4px 4px 0px 0px #000000;
+    --neo-shadow-sm: 2px 2px 0px 0px #000000;
+    --neo-radius: 2px;
+    --neo-accent: #2563EB;
+    --neo-accent-text: #FFFFFF;
+    --neo-pink: #FF3B9A;
+    --neo-yellow: #FACC15;
+    --neo-cyan: #67E8F9;
+    --neo-red: #EF4444;
+    --neo-green: #22C55E;
+    --neo-separator: #000000;
+    --neo-nav-bg: #FFFFFF;
+    --neo-input-bg: #FFFFFF;
+    --neo-chip-bg: #F0F0F0;
+
+    /* Shadcn compat */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 224 76% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 224 76% 48%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 0%;
+    --input: 0 0% 90%;
+    --ring: 224 76% 48%;
+    --radius: 2px;
+  }
+
+  [data-theme="dark"] {
+    --neo-bg: #121212;
+    --neo-bg-secondary: #181818;
+    --neo-surface: #1E1E1E;
+    --neo-text: #ECECEC;
+    --neo-text-secondary: #BBBBBB;
+    --neo-hint: #6B6B6B;
+    --neo-border: #3A3A3A;
+    --neo-border-width: 2.5px;
+    --neo-shadow: 3px 3px 0px 0px rgba(255, 255, 255, 0.07);
+    --neo-shadow-sm: 2px 2px 0px 0px rgba(255, 255, 255, 0.05);
+    --neo-separator: rgba(255, 255, 255, 0.10);
+    --neo-nav-bg: #161616;
+    --neo-input-bg: #1E1E1E;
+    --neo-chip-bg: #2A2A2A;
+    --neo-accent: #5B9BF7;
+    --neo-pink: #FF5CAD;
+    --neo-yellow: #FFD43B;
+    --neo-cyan: #5ED8E8;
+    --neo-red: #F87171;
+    --neo-green: #4ADE80;
+
+    --background: 0 0% 7%;
+    --foreground: 0 0% 93%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 93%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 93%;
+    --border: 0 0% 23%;
+    --input: 0 0% 20%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+  }
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    overscroll-behavior: none;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    @apply antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--neo-bg);
+    color: var(--neo-text);
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+    transition: background-color 0.2s, color 0.2s;
+  }
+}
+
+/* ─────────────── NEOBRUTALISM COMPONENTS ─────────────── */
+
+@layer components {
+
+  /* ── Card / Section ── */
+  .neo-card {
+    background-color: var(--neo-surface);
+    border: var(--neo-border-width) solid var(--neo-border);
+    box-shadow: var(--neo-shadow);
+    overflow: hidden;
+    transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .neo-card-flat {
+    background-color: var(--neo-surface);
+    border: var(--neo-border-width) solid var(--neo-border);
+    overflow: hidden;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+
+  /* ── Section header ── */
+  .neo-section-header {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--neo-text);
+  }
+
+  /* ── Cell / Row ── */
+  .neo-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background-color: var(--neo-surface);
+    transition: background-color 0.1s;
+  }
+
+  .neo-cell:active {
+    opacity: 0.85;
+  }
+
+  .neo-cell + .neo-cell {
+    border-top: var(--neo-border-width) solid var(--neo-separator);
+  }
+
+  /* ── Primary button ── */
+  .neo-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 54px;
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background-color: #000000;
+    color: #FFFFFF;
+    border: var(--neo-border-width) solid var(--neo-border);
+    box-shadow: var(--neo-shadow);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+
+  [data-theme="dark"] .neo-button {
+    background-color: #FFFFFF;
+    color: #000000;
+  }
+
+  .neo-button:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+
+  .neo-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Blue accent button */
+  .neo-button-accent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 54px;
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background-color: var(--neo-accent);
+    color: #FFFFFF;
+    border: var(--neo-border-width) solid var(--neo-border);
+    box-shadow: var(--neo-shadow);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+
+  .neo-button-accent:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+
+  /* Secondary button */
+  .neo-button-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background-color: var(--neo-surface);
+    color: var(--neo-text);
+    border: var(--neo-border-width) solid var(--neo-border);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+
+  .neo-button-secondary:active {
+    transform: translate(1px, 1px);
+  }
+
+  /* Danger button */
+  .neo-button-danger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    background-color: transparent;
+    color: var(--neo-red);
+    border: var(--neo-border-width) solid var(--neo-red);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  .neo-button-danger:active {
+    transform: translate(1px, 1px);
+  }
+
+  /* ── Input fields ── */
+  .neo-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: var(--neo-border-width) solid var(--neo-border);
+    background-color: var(--neo-input-bg);
+    color: var(--neo-text);
+    font-size: 15px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.15s, background-color 0.2s;
+  }
+
+  .neo-input:focus {
+    border-color: var(--neo-accent);
+    box-shadow: var(--neo-shadow-sm);
+  }
+
+  .neo-input::placeholder {
+    color: var(--neo-hint);
+    font-weight: 400;
+  }
+
+  .neo-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: var(--neo-border-width) solid var(--neo-border);
+    background-color: var(--neo-input-bg);
+    color: var(--neo-text);
+    font-size: 15px;
+    font-weight: 500;
+    outline: none;
+    resize: none;
+    min-height: 120px;
+    transition: border-color 0.15s, background-color 0.2s;
+  }
+
+  .neo-textarea:focus {
+    border-color: var(--neo-accent);
+    box-shadow: var(--neo-shadow-sm);
+  }
+
+  .neo-textarea::placeholder {
+    color: var(--neo-hint);
+    font-weight: 400;
+  }
+
+  /* ── Tag chip ── */
+  .neo-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background-color: var(--neo-chip-bg);
+    color: var(--neo-text);
+    border: 1.5px solid var(--neo-border);
+  }
+
+  .neo-chip-active {
+    background-color: var(--neo-accent);
+    color: #FFFFFF;
+    border-color: var(--neo-border);
+  }
+
+  /* ── Avatar ── */
+  .neo-avatar {
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: var(--neo-chip-bg);
+    border: var(--neo-border-width) solid var(--neo-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .neo-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ── Title ── */
+  .neo-title {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: var(--neo-text);
+    line-height: 1.1;
+  }
+
+  .neo-title-accent {
+    color: var(--neo-accent);
+    font-style: italic;
+  }
+
+  .neo-subtitle {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--neo-hint);
+  }
+
+  /* ── Badge ── */
+  .neo-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 800;
+    background-color: #000000;
+    color: #FFFFFF;
+    border: 1.5px solid var(--neo-border);
+  }
+
+  [data-theme="dark"] .neo-badge {
+    background-color: #FFFFFF;
+    color: #000000;
+  }
+
+  /* ── Colored accent cards ── */
+  .neo-card-pink {
+    background-color: var(--neo-pink);
+    border: var(--neo-border-width) solid var(--neo-border);
+    box-shadow: var(--neo-shadow);
+    color: #FFFFFF;
+  }
+
+  .neo-card-yellow {
+    background-color: var(--neo-yellow);
+    border: var(--neo-border-width) solid var(--neo-border);
+    box-shadow: var(--neo-shadow);
+    color: #000000;
+  }
+
+  .neo-card-cyan {
+    background-color: var(--neo-cyan);
+    border: var(--neo-border-width) solid var(--neo-border);
+    box-shadow: var(--neo-shadow);
+    color: #000000;
+  }
+
+  .neo-card-blue {
+    background-color: var(--neo-accent);
+    border: var(--neo-border-width) solid var(--neo-border);
+    box-shadow: var(--neo-shadow);
+    color: #FFFFFF;
+  }
+
+  /* ── Dashed box ── */
+  .neo-dashed {
+    border: 2.5px dashed var(--neo-border);
+    background-color: transparent;
+  }
+
+  /* ── Scrollbar hide (mobile) ── */
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* Legacy compat: map old tg- classes to neo */
+@layer components {
+  .tg-section { @apply neo-card; }
+  .tg-cell { @apply neo-cell; }
+  .tg-button { @apply neo-button; }
+  .tg-input { @apply neo-input; }
+  .tg-textarea { @apply neo-textarea; }
+  .tg-chip { @apply neo-chip; }
+  .tg-avatar { @apply neo-avatar; }
+  .tg-title { @apply neo-title; }
+  .tg-subtitle { @apply neo-subtitle; }
+  .tg-badge { @apply neo-badge; }
+}
+
+/* Smart search button — animated gradient border */
+@property --gradient-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin-gradient {
+  to { --gradient-angle: 360deg; }
+}
+
+.neo-smart-search-btn {
+  position: relative;
+  background: var(--neo-surface);
+  border: none;
+  z-index: 0;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.neo-smart-search-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2.5px;
+  z-index: -2;
+  background: conic-gradient(
+    from var(--gradient-angle),
+    var(--neo-accent),
+    var(--neo-pink),
+    var(--neo-yellow),
+    var(--neo-cyan),
+    var(--neo-accent)
+  );
+  animation: spin-gradient 3s linear infinite;
+}
+
+.neo-smart-search-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--neo-surface);
+}
