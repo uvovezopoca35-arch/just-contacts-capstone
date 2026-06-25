@@ -56,3 +56,9 @@ __pycache__/
 *.py[cod]
 .adk/
 *.session.json
+
+# local video/production materials (kept out of the repo on purpose)
+/presentation.html
+/cover-youtube.html
+/cover-kaggle.html
+/VIDEO_SCRIPT.md
