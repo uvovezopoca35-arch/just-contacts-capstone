@@ -10,7 +10,8 @@ import { enforceRateLimit } from '@/lib/rate-limit';
 import { aiContactParsingFlow } from '@/ai/logic/contact-parsing';
 import type { AiContactParsingInput, AiContactParsingOutput } from '@/ai/logic/contact-parsing';
 
-export type { AiContactParsingInput, AiContactParsingOutput };
+// NOTE: a 'use server' module may only export async functions, so types are NOT
+// re-exported here (it breaks Turbopack dev). Import them from '@/ai/logic/contact-parsing'.
 
 export async function parseContactDetails(
   input: AiContactParsingInput,

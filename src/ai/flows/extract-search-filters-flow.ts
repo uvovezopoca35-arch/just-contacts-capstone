@@ -10,7 +10,8 @@ import { enforceRateLimit } from '@/lib/rate-limit';
 import { extractSearchFiltersFlow } from '@/ai/logic/search-filters';
 import type { SearchFiltersInput, SearchFiltersOutput } from '@/ai/logic/search-filters';
 
-export type { SearchFiltersInput, SearchFiltersOutput };
+// NOTE: a 'use server' module may only export async functions, so types are NOT
+// re-exported here (it breaks Turbopack dev). Import them from '@/ai/logic/search-filters'.
 
 export async function extractSearchFilters(
   input: SearchFiltersInput,

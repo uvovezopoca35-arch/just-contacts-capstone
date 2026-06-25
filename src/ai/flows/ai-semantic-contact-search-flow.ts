@@ -13,7 +13,8 @@ import { enforceRateLimit } from '@/lib/rate-limit';
 import { aiSemanticContactSearchFlow } from '@/ai/logic/semantic-search';
 import type { AiSemanticContactSearchInput, AiSemanticContactSearchOutput } from '@/ai/logic/semantic-search';
 
-export type { AiSemanticContactSearchInput, AiSemanticContactSearchOutput };
+// NOTE: a 'use server' module may only export async functions, so types are NOT
+// re-exported here (it breaks Turbopack dev). Import them from '@/ai/logic/semantic-search'.
 
 export async function aiSemanticContactSearch(
   input: AiSemanticContactSearchInput,
