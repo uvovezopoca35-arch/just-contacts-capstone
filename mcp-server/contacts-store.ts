@@ -41,6 +41,30 @@ if (!USER_ID) {
 }
 const uid: string = USER_ID;
 
+/**
+ * Retry a Gemini call on transient errors (503 overloaded / 429 rate-limit) with
+ * exponential backoff. Gemini occasionally returns 503 "high demand" spikes that
+ * clear on a retry; this keeps the agent demo resilient. Non-transient errors and
+ * the final attempt propagate unchanged.
+ */
+async function withRetry<T>(label: string, fn: () => Promise<T>, attempts = 3): Promise<T> {
+  let lastErr: unknown;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      const msg = e instanceof Error ? e.message : String(e);
+      const transient = /\b(503|429)\b|UNAVAILABLE|overloaded|high demand|RESOURCE_EXHAUSTED/i.test(msg);
+      if (!transient || i === attempts) throw e;
+      const delay = 800 * 2 ** (i - 1);
+      console.error(`[mcp] ${label}: transient error (attempt ${i}/${attempts}), retrying in ${delay}ms`);
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+  throw lastErr;
+}
+
 function db() {
   return getAdmin().firestore();
 }
@@ -132,7 +156,7 @@ export async function getContact(contactId: string) {
  */
 export async function addContact(text: string) {
   // 1. LLM structured extraction (same flow the app uses).
-  const parsed = await aiContactParsingFlow({ text });
+  const parsed = await withRetry('parse', () => aiContactParsingFlow({ text }));
 
   // 2. De-dupe by phone, just like the bot, to avoid silent duplicates.
   if (parsed.phone) {
@@ -159,7 +183,7 @@ export async function addContact(text: string) {
   try {
     const built = await buildContactVectors(
       [{ id: 'new', name: parsed.name, role: parsed.role || '', tags: parsed.tags || [], summary: structuredSummary }],
-      (texts) => embedTextsCore(texts, 'RETRIEVAL_DOCUMENT'),
+      (texts) => withRetry('embed', () => embedTextsCore(texts, 'RETRIEVAL_DOCUMENT')),
     );
     vecs = built.get('new');
   } catch (e) {
@@ -227,7 +251,7 @@ export async function searchContacts(query: string) {
   const missing = contacts.filter((c) => !c.vecs?.length || c.embeddingVersion !== EMBEDDING_VERSION);
   if (missing.length > 0) {
     try {
-      const built = await buildContactVectors(missing, (texts) => embedTextsCore(texts, 'RETRIEVAL_DOCUMENT'));
+      const built = await buildContactVectors(missing, (texts) => withRetry('embed', () => embedTextsCore(texts, 'RETRIEVAL_DOCUMENT')));
       const batch = db().batch();
       missing.forEach((c) => {
         const v = built.get(c.id);
@@ -248,7 +272,7 @@ export async function searchContacts(query: string) {
   }
 
   // 3. Embed query, apply logical filters, build a bounded candidate set.
-  const [queryVec] = await embedTextsCore([semanticQuery], 'RETRIEVAL_QUERY');
+  const [queryVec] = await withRetry('embed-query', () => embedTextsCore([semanticQuery], 'RETRIEVAL_QUERY'));
   const withVecs = applySearchFilters(
     contacts.map((c) => ({ ...c, vecs: c.embeddingVersion === EMBEDDING_VERSION ? c.vecs : undefined })),
     { excludeTerms: extracted.excludeTerms, birthdayMonth: extracted.birthdayMonth },
@@ -256,7 +280,7 @@ export async function searchContacts(query: string) {
   const candidates = selectSearchCandidates(semanticQuery, queryVec, withVecs);
 
   // 4. LLM makes the final relevance decision over the small candidate set.
-  const ranked = await aiSemanticContactSearchFlow({
+  const ranked = await withRetry('search-rank', () => aiSemanticContactSearchFlow({
     query: semanticQuery,
     contacts: candidates.map((c) => ({
       id: c.id,
@@ -265,7 +289,7 @@ export async function searchContacts(query: string) {
       tags: c.tags || [],
       summary: c.summary || '',
     })),
-  });
+  }));
 
   const byId = new Map(contacts.map((c) => [c.id, c]));
   const results = ranked.relevantContactIds
@@ -328,12 +352,12 @@ export async function askAboutContact(contactId: string, question: string) {
 
   const dossier = [full.dossier, ...full.facts.map((f) => `${f.label}: ${f.value}`)].filter(Boolean).join('. ');
 
-  const { output } = await askPrompt({
+  const { output } = await withRetry('ask', () => askPrompt({
     contactName: full.name,
     role: full.role,
     dossier,
     interactions,
     question: question.slice(0, 300),
-  });
+  }));
   return { contactId, answer: output?.answer || '' };
 }

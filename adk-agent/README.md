@@ -63,6 +63,19 @@ adk web
 > Node.js must be installed: the agents spawn the MCP server via `npx tsx mcp-server/server.ts`.
 > Run `npm install` in the repo root once so `tsx` and the MCP SDK are available.
 
+## Troubleshooting: transient Gemini 503 ("high demand")
+Gemini can briefly return `503 UNAVAILABLE` under load. The MCP server retries its own
+Gemini calls automatically; the ADK agents' reasoning calls are not wrapped, so a turn can
+occasionally come back empty. If that happens while recording, just retry, or switch to a
+more available model without code changes:
+```bash
+# repo-root .env
+GEMINI_MODEL=googleai/gemini-2.0-flash   # MCP server (parse/search/embed)
+# adk-agent/.env
+ADK_ORCHESTRATOR_MODEL=gemini-2.0-flash
+ADK_SPECIALIST_MODEL=gemini-2.0-flash
+```
+
 ## Notes
 - Each specialist spawns its own MCP server process (clean least-privilege separation).
   For a single shared process, give one `McpToolset` to the root agent instead.
